@@ -1,5 +1,6 @@
 <?php
-require 'connect.php';
+
+require '../connect.php';
 $erro = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -10,12 +11,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $quantidade = filter_var($_POST['quantidade'], FILTER_VALIDATE_INT);
     $data_validade = trim($_POST['data_validade']);
 
-
     if (empty($nome) || empty($categoria) || empty($data_validade) || $preco === false || $quantidade === false) {
         $erro = "Preencha todos os campos corretamente.";
     } else {
         try {
-       
             $sql = "INSERT INTO produtos (nome, categoria, descricao, preco, quantidade, data_validade) 
                     VALUES (:nome, :categoria, :descricao, :preco, :quantidade, :data_validade)";
             $stmt = $pdo->prepare($sql);
@@ -27,23 +26,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(':data_validade', $data_validade);
             $stmt->execute();
             
-            header("Location: index.php");
+            // Após salvar, recua uma pasta e redireciona para a raiz
+            header("Location: ../index.php");
             exit;
         } catch (PDOException $e) {
-            $erro = "Erro ao cadastrar: " . $e->getMessage();
+            $erro = "Erro ao registar: " . $e->getMessage();
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastrar Produto</title>
+    <title>Registar Produto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="container mt-4">
-    <h2>Cadastrar Produto</h2>
+    <h2>Registar Produto</h2>
     <?php if($erro): ?> <div class="alert alert-danger"><?= $erro ?></div> <?php endif; ?>
     
     <form method="POST">
@@ -71,8 +71,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label>Data de Validade:</label>
             <input type="date" name="data_validade" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-success">Salvar</button>
-        <a href="index.php" class="btn btn-secondary">Voltar</a>
+        <button type="submit" class="btn btn-success">Guardar</button>
+  
+        <a href="../index.php" class="btn btn-secondary">Voltar</a>
     </form>
 </body>
 </html>
